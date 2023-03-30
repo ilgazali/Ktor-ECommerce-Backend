@@ -1,0 +1,22 @@
+package com.example.model.dto
+
+import com.example.model.Rating
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+import org.litote.kmongo.Id
+
+@Serializable
+class ProductDto(
+    var _id: String? = null,
+    val title: String,
+    val price: Double,
+    val description: String,
+    val count:Int,//sepete kac adet urun eklendi
+    val category: String,
+    val image: String,
+    val image_two: String,
+    val image_three: String,
+    val sale_state:Int, //kac adet
+    val salePrice: Double?,
+    val rating: Double
+)

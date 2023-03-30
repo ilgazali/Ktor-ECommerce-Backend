@@ -1,22 +1,22 @@
-package com.example.repository
+package com.example.repository.user
 
 import com.example.database.MongoDatabase
 import com.example.model.User
+import com.example.model.dto.UserDto
 import com.mongodb.client.model.Filters.eq
 import org.bson.Document
-import org.litote.kmongo.Id
-import java.util.ArrayList
+import java.util.*
 
 class UserRepositoryImpl : UserRepository {
 
     private val usersCollection = MongoDatabase.database.getCollection("users")
 
 
-    override fun getUsers(): ArrayList<User> {
-        val list = ArrayList<User>()
+    override fun getUsers(): ArrayList<UserDto> {
+        val list = ArrayList<UserDto>()
 
-            val col = usersCollection.find().map{
-                documentToUser(it)
+           usersCollection.find().map{
+               documentToUserDto(it)
             }.forEach {
                 list.add(it)
             }
@@ -24,32 +24,30 @@ class UserRepositoryImpl : UserRepository {
         }
 
 
-
-    override fun getUserByEmail(email: String): User? {
+    override fun getUserByEmail(email: String): UserDto? {
         val document = usersCollection.find(eq("email", email)).first()
-        return if (document != null) documentToUser(document) else null
+        return if (document != null) documentToUserDto(document) else null
     }
 
 
-    override fun getUserById(id: String): User? {
+    override fun getUserById(id: String): UserDto? {
         val document = usersCollection.find(eq("id", id)).first()
-        return if (document != null) documentToUser(document) else null
+        return if (document != null) documentToUserDto(document) else null
     }
 
 
     override fun createUser(user: User): Boolean {
         val document = userToDocument(user)
-        val check = usersCollection.insertOne(document).wasAcknowledged()
-        if (check){
-            return true
-        }else{
+        var check = usersCollection.insertOne(document).wasAcknowledged()
+        if (!check){
             return false
         }
-
+        return true
     }
 
-    private fun documentToUser(document: Document): User {
-        return User(
+    private fun documentToUserDto(document: Document): UserDto {
+        return UserDto(
+            _id = document.get("_id").toString(), // to get id of object from db use this get()
             firstName = document.getString("firstName"),
             lastName = document.getString("lastName"),
             password = document.getString("password"),
@@ -59,7 +57,7 @@ class UserRepositoryImpl : UserRepository {
 
     private fun userToDocument(user: User): Document {
         return Document()
-            .append("id",user.id.toString())
+            //.append("_id",user._id.toString())
             .append("firstName", user.firstName)
             .append("lastName",user.lastName)
             .append("password", user.password)

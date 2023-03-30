@@ -1,15 +1,11 @@
 package com.example.routes
 
-import com.example.model.User
 import com.example.model.dto.UserDto
 
-import com.example.repository.UserRepositoryImpl
+import com.example.repository.user.UserRepositoryImpl
 import com.example.service.AuthenticationService
-import com.example.util.ErrorResponse
 import com.example.util.toUser
 import io.github.smiley4.ktorswaggerui.dsl.post
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -26,8 +22,8 @@ fun Route.register() {
 
 
        post({
-           tags = listOf("test")
-           description = "Performs the given operation on the given values and returns the result"
+           tags = listOf("user")
+           description = "provide registration and login "
            request {
 
                pathParameter<String>("firstName") {
@@ -66,10 +62,10 @@ fun Route.register() {
 
            //call.response.headers.append("My-User-Id-Header", user.id.toString())
 
-           authenticationService.register(user)?.let {
-               call.response.headers.append("My-User-Id-Header", it.toString())
+           authenticationService.register(user).let {
+               call.response.headers.append("My-User-Id-Header", user._id.toString())
                call.respond(HttpStatusCode.Created)
-            }?: call.respond(HttpStatusCode.BadRequest, ErrorResponse.BAD_REQUEST_RESPONSE)
+            }
 
        }
    }

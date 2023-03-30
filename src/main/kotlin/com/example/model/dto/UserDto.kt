@@ -1,14 +1,14 @@
 package com.example.model.dto
 
-import com.example.model.User
 import kotlinx.serialization.Serializable
+import org.bson.types.ObjectId
 import org.litote.kmongo.Id
 
-@Serializable
 data class UserDto(
-                   var id: String? = null,
-                   val firstName: String,
-                   val lastName: String,
-                   val password: String,
-                   val email: String
+
+    var _id: String? = null,
+    val firstName: String,
+    val lastName: String,
+    val password: String,
+    val email: String
                    )
