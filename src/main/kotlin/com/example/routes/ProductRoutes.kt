@@ -1,59 +1,71 @@
 package com.example.routes
 
 import com.example.model.dto.ProductDto
-import com.example.model.dto.UserDto
 import com.example.repository.product.ProductRepositoryImpl
 import com.example.util.toProduct
-import com.example.util.toUser
 import io.ktor.client.request.*
 import io.ktor.server.routing.*
 import io.github.smiley4.ktorswaggerui.dsl.post
 import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.delete
+import io.github.smiley4.ktorswaggerui.*
+import io.github.smiley4.*
+import io.github.smiley4.ktorswaggerui.*
+
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
+import io.ktor.server.request.*
 
 private val repo = ProductRepositoryImpl()
 
 fun Route.productRouting(){
     route("/product"){
+
+
         post("/add",{
             tags = listOf("product")
             description = "add a single Product"
+
             request {
-                pathParameter<String>("title") {
+                queryParameter<String>("title") {
                     description = "title of the Product"
                 }
-                pathParameter<Double>("price") {
+                queryParameter<Double>("price") {
                     description = "price of the Product"
+
                 }
-                pathParameter<Int>("count") {
-                    description = "count of the Product"
+                queryParameter<Int>("count") {
+                    description = "count of the Product added to Cart"
                 }
-                pathParameter<String>("category") {
+                queryParameter<Int>("stockCount") {
+                    description = "stock amount of Product"
+                }
+                queryParameter<String>("category") {
                     description = "category of the Product"
                 }
-                pathParameter<String>("image") {
+                queryParameter<String>("image") {
                     description = "1. image of the Product"
                 }
-                pathParameter<String>("image_two") {
+                queryParameter<String>("description") {
+                    description = "description of the Product"
+                }
+                queryParameter<String>("image_two") {
                     description = "2. image of the Product"
                 }
-                pathParameter<String>("image_three") {
+                queryParameter<String>("image_three") {
                     description = "3. image of the Product"
                 }
-                pathParameter<Int>("sale_state"){
+                queryParameter<Int>("sale_state"){
                     description = "represents total amount of the Products"
                 }
-                pathParameter<Double>("salePrice"){
+                queryParameter<Double>("salePrice"){
                     description = "if it exists then it means sale price of the Product - attention it is nullable"
                 }
-                pathParameter<Double>("raiting"){
+                queryParameter<Double>("rating"){
                     description = "rate of the Product"
                 }
-                body<ProductDto>() // important part
             }
             response {
                 HttpStatusCode.OK to {
@@ -65,13 +77,56 @@ fun Route.productRouting(){
                 }
             }
         }) {
-            val request = call.receive<ProductDto>()
-            val product = request.toProduct()
 
-            //call.response.headers.append("My-User-Id-Header", user.id.toString())
+          // val request = call.receive<ProductDto>()
+          //  call.request.queryParameters
 
-               val result = repo.addProduct(product)
-               call.respond(HttpStatusCode.Created,result)
+           // val _id = call.parameters["_id"]
+
+            val title= call.request.queryParameters["title"]
+            val price=call.request.queryParameters["price"]?.toDouble()
+            val description=call.request.queryParameters["description"]
+            val count=call.request.queryParameters["count"]?.toInt()
+            val stockCount=call.request.queryParameters["stockCount"]?.toInt()
+            val category=call.request.queryParameters["category"]
+            val image=call.request.queryParameters["image"]
+            val image_two=call.request.queryParameters["image_two"]
+            val image_three= call.request.queryParameters["image_three"]
+            val sale_state=call.request.queryParameters["sale_state"]?.toInt()
+            val salePrice=call.request.queryParameters["salePrice"]?.toDouble()
+            val rating=call.request.queryParameters["rating"]?.toDouble()
+
+            if (title == null || count == null || category == null
+                || image == null||image_two == null ||
+                image_three == null || price == null ||
+                description == null || stockCount == null ||
+                sale_state == null || salePrice == null || rating == null) {
+                call.respond(HttpStatusCode.BadRequest, "Missing or invalid parameter values")
+            }else{
+                val productDto = ProductDto(
+                    title = title,
+                    price = price,
+                    description = description,
+                    count = count,
+                    stockCount = stockCount,
+                    category = category,
+                    image = image,
+                    image_two = image_two,
+                    image_three = image_three,
+                    sale_state = sale_state,
+                    salePrice = salePrice,
+                    rating = rating)
+
+                val product = productDto.toProduct()
+                //call.response.headers.append("My-User-Id-Header", user.id.toString())
+                val result = repo.addProduct(product)
+                call.respond(HttpStatusCode.Created,result)
+            }
+
+
+
+
+
 
         }
 
@@ -88,6 +143,13 @@ fun Route.productRouting(){
             }
             call.respond(result)
 
+        }
+        delete("/deleteAll",{
+            tags = listOf("product")
+            description = "delete All Products"
+        }) {
+           repo.deleteAll()
+            call.respond(HttpStatusCode.Created,"All data was deleted")
         }
 
 

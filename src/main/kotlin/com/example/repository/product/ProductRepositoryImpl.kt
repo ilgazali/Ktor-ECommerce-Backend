@@ -7,6 +7,7 @@ import com.example.model.User
 import com.example.model.dto.ProductDto
 import com.example.model.dto.UserDto
 import org.bson.Document
+import org.bson.conversions.Bson
 
 class ProductRepositoryImpl : ProductRepository{
     private val productCollection = MongoDatabase.database.getCollection("products")
@@ -15,6 +16,14 @@ class ProductRepositoryImpl : ProductRepository{
         val document = productToDocument(product)
         val check = productCollection.insertOne(document).wasAcknowledged()
         if (!check){
+            return false
+        }
+        return true
+    }
+
+    override fun deleteAll(): Boolean {
+      val result = productCollection.deleteMany(Document()).wasAcknowledged()
+        if(!result){
             return false
         }
         return true
@@ -41,6 +50,7 @@ class ProductRepositoryImpl : ProductRepository{
          price= document.getDouble("price"),
          description= document.getString("description"),
          count= document.getInteger("count"),//sepete kac adet urun eklendi
+             stockCount = document.getInteger("stockCount"),
          category=document.getString("category"),
          image=document.getString("image"),
          image_two=document.getString("image_two"),
@@ -57,6 +67,7 @@ class ProductRepositoryImpl : ProductRepository{
             .append("price", product.price)
             .append("description", product.description)
             .append("count", product.count)
+            .append("stockCount",product.stockCount)
             .append("category", product.category)
             .append("image", product.image)
             .append("image_two", product.image_two)
