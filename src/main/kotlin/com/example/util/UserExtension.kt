@@ -1,11 +1,9 @@
 package com.example.util
 
-import com.example.model.Product
-import com.example.model.User
-import com.example.model.dto.ProductDto
-import com.example.model.dto.UserDto
-import org.litote.kmongo.json
-import org.litote.kmongo.variable
+import com.example.model.product.Product
+import com.example.model.user.User
+import com.example.model.product.ProductDto
+import com.example.model.user.UserDto
 
 fun User.toDto(): UserDto =
     UserDto(
@@ -13,19 +11,23 @@ fun User.toDto(): UserDto =
         firstName = this.firstName,
         lastName = this.lastName,
         email = this.email,
-        password = this.password
+        password = this.password,
+        username = this.username,
+        salt = this.salt
 
     )
 
 fun UserDto.toUser(): User =
     User(
+        salt= this.salt,
+        username = this.username,
         firstName = this.firstName,
         lastName = this.lastName,
         email = this.email,
         password = this.password
     )
 
-fun Product.toProductDto():ProductDto =
+fun Product.toProductDto(): ProductDto =
     ProductDto(
     _id = this._id.toString(),
         title= this.title,
@@ -43,7 +45,7 @@ fun Product.toProductDto():ProductDto =
     rating = this.rating
 )
 
-fun ProductDto.toProduct():Product = Product(title= this.title,
+fun ProductDto.toProduct(): Product = Product(title= this.title,
     price = this.price,
     description = this.description,
     count = this.count,

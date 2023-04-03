@@ -1,9 +1,6 @@
-package com.example.model.dto
+package com.example.model.product
 
-import com.example.model.Rating
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import org.litote.kmongo.Id
 
 @Serializable
 class ProductDto(

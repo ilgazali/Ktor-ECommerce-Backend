@@ -1,27 +1,22 @@
 package com.example.routes
 
-import com.example.model.dto.ProductDto
+import com.example.model.product.ProductDto
 import com.example.repository.product.ProductRepositoryImpl
 import com.example.util.toProduct
-import io.ktor.client.request.*
 import io.ktor.server.routing.*
 import io.github.smiley4.ktorswaggerui.dsl.post
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.delete
-import io.github.smiley4.ktorswaggerui.*
-import io.github.smiley4.*
-import io.github.smiley4.ktorswaggerui.*
 
 
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
-import io.ktor.server.request.*
 
 private val repo = ProductRepositoryImpl()
 
 fun Route.productRouting(){
-    route("/product"){
+   route("/product"){
 
 
         post("/add",{
@@ -66,6 +61,7 @@ fun Route.productRouting(){
                 queryParameter<Double>("rating"){
                     description = "rate of the Product"
                 }
+
             }
             response {
                 HttpStatusCode.OK to {
@@ -78,10 +74,7 @@ fun Route.productRouting(){
             }
         }) {
 
-          // val request = call.receive<ProductDto>()
-          //  call.request.queryParameters
 
-           // val _id = call.parameters["_id"]
 
             val title= call.request.queryParameters["title"]
             val price=call.request.queryParameters["price"]?.toDouble()

@@ -1,15 +1,12 @@
 package com.example.repository.product
 
 import com.example.database.MongoDatabase
-import com.example.model.Product
-import com.example.model.Rating
-import com.example.model.User
-import com.example.model.dto.ProductDto
-import com.example.model.dto.UserDto
+import com.example.model.product.Product
+import com.example.model.product.ProductDto
 import org.bson.Document
-import org.bson.conversions.Bson
 
 class ProductRepositoryImpl : ProductRepository{
+
     private val productCollection = MongoDatabase.database.getCollection("products")
 
     override fun addProduct(product: Product): Boolean {
@@ -38,6 +35,7 @@ class ProductRepositoryImpl : ProductRepository{
         }
         return list
     }
+
 
     override fun getProductByUser(): ArrayList<ProductDto> {
         TODO("Not yet implemented")
