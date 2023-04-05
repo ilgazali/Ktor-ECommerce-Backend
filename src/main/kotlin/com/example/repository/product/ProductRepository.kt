@@ -7,5 +7,9 @@ interface ProductRepository {
     fun addProduct(product: Product):Boolean
    fun deleteAll() : Boolean
    fun getProducts():ArrayList<ProductDto>
-    fun getProductByUser():ArrayList<ProductDto>
+    fun getOnSaleProducts():ArrayList<ProductDto>
+    fun getProductsByCategory(category: String): ArrayList<ProductDto>
+
+
+
 }

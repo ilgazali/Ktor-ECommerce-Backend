@@ -16,5 +16,6 @@ class ProductDto(
     val image_three: String,
     val sale_state:Int?, //kac adet indirimli urun var
     val salePrice: Double?,
+    val onSale:Boolean? = false,
     val rating: Double
 )

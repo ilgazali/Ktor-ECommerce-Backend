@@ -17,6 +17,7 @@ import org.litote.kmongo.Id
      val image_three: String,
      val sale_state:Int?, //kac adet
      val salePrice: Double?,
+     val onSale:Boolean? = false,
      val rating: Double
                 )
 

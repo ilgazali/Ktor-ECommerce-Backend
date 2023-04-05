@@ -1,6 +1,11 @@
 package com.example.routes
 
+import com.example.model.cart.Cart
 import com.example.model.product.ProductDto
+import com.example.model.requests.CartRequest
+import com.example.model.requests.CategoryRequest
+import com.example.repository.cart.CartRepositoryImpl
+import com.example.repository.category.CategoryRepositoryImpl
 import com.example.repository.product.ProductRepositoryImpl
 import com.example.util.toProduct
 import io.ktor.server.routing.*
@@ -11,10 +16,12 @@ import io.github.smiley4.ktorswaggerui.dsl.delete
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 
-private val repo = ProductRepositoryImpl()
-
+private val productRepository = ProductRepositoryImpl()
+private val categoryRepository = CategoryRepositoryImpl()
 fun Route.productRouting(){
    route("/product"){
 
@@ -61,6 +68,9 @@ fun Route.productRouting(){
                 queryParameter<Double>("rating"){
                     description = "rate of the Product"
                 }
+                queryParameter<Boolean>("onSale"){
+                    description = "sale state type of boolean of the Product"
+                }
 
             }
             response {
@@ -88,6 +98,8 @@ fun Route.productRouting(){
             val sale_state=call.request.queryParameters["sale_state"]?.toInt()
             val salePrice=call.request.queryParameters["salePrice"]?.toDouble()
             val rating=call.request.queryParameters["rating"]?.toDouble()
+            val onSale=call.request.queryParameters["onSale"]?.toBoolean()
+
 
             if (title == null || count == null || category == null
                 || image == null||image_two == null ||
@@ -108,11 +120,12 @@ fun Route.productRouting(){
                     image_three = image_three,
                     sale_state = sale_state,
                     salePrice = salePrice,
+                    onSale = onSale,
                     rating = rating)
 
                 val product = productDto.toProduct()
                 //call.response.headers.append("My-User-Id-Header", user.id.toString())
-                val result = repo.addProduct(product)
+                val result = productRepository.addProduct(product)
                 call.respond(HttpStatusCode.Created,result)
             }
 
@@ -123,25 +136,99 @@ fun Route.productRouting(){
 
         }
 
-        get("getAll",{
-            tags = listOf("product")
-            description = "get All Products"
 
-        }) {
-            val result = repo.getProducts()
-            if (result.size < 1){
+       authenticate {
+           get("getAllProducts", {
+               tags = listOf("product")
+               description = "get All Products"
 
-                call.respond(HttpStatusCode.Created, "No product here yet")
+           }) {
+               val result = productRepository.getProducts()
+               if (result.size < 1) {
 
-            }
-            call.respond(result)
+                   call.respond(HttpStatusCode.Created, "No product here yet")
 
-        }
+               }
+               call.respond(result)
+
+           }
+       }
+
+       authenticate {
+           get("getAllProductsOnSale", {
+               tags = listOf("product")
+               description = "get All Products On Sale"
+
+           }) {
+               val result = productRepository.getOnSaleProducts()
+               if (result.size < 1) {
+
+                   call.respond(HttpStatusCode.Created, "No product on sale here yet")
+
+               }
+               call.respond(result)
+
+           }
+       }
+       authenticate {
+           post("getProductsByCategory/{category}",{
+               tags = listOf("product")
+               description = "get Products By Category"
+               request {
+                   body<CategoryRequest>()
+               }
+           }
+           ){
+               val request = call.receive<CategoryRequest>()
+
+               val productsByCategory = productRepository.getProductsByCategory(request.category)
+
+               if(productsByCategory.size < 1){
+                   call.respond(HttpStatusCode.Conflict,"No product found in this category here")
+               }else{
+                   call.respond(HttpStatusCode.OK,productsByCategory)
+               }
+           }
+       }
+
+       authenticate {
+           post("{category}",{
+               tags = listOf("category")
+               description = "add Category For Products"
+           }) {
+               val category = call.receive<String>()
+               val result = categoryRepository.addCategory(category)
+
+               if (result){
+                   call.respond(HttpStatusCode.Created,"added category")
+               }else{
+                   call.respond(HttpStatusCode.BadRequest,"Something went wrong!")
+               }
+           }
+       }
+
+       authenticate {
+           get("categories",{
+               tags = listOf("category")
+               description = "get All Categories"
+           }) {
+               val result = categoryRepository.getCategories()
+              if (result.size < 1){
+                   call.respond(HttpStatusCode.Conflict,"No category found!")
+               }else{
+                  call.respond(HttpStatusCode.OK,result)
+               }
+           }
+       }
+
+
+
+
         delete("/deleteAll",{
             tags = listOf("product")
             description = "delete All Products"
         }) {
-           repo.deleteAll()
+           productRepository.deleteAll()
             call.respond(HttpStatusCode.Created,"All data was deleted")
         }
 

@@ -27,8 +27,7 @@ fun Application.configureRouting(
         signIn(userRepository, hashingService, tokenService, tokenConfig)
         authenticate()
         getSecretInfo()
-        //register()
-       // login()
+        cartRouting()
         productRouting()
     }
 }

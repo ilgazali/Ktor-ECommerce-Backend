@@ -4,6 +4,7 @@ import com.example.database.MongoDatabase
 import com.example.model.product.Product
 import com.example.model.product.ProductDto
 import org.bson.Document
+import org.litote.kmongo.eq
 
 class ProductRepositoryImpl : ProductRepository{
 
@@ -36,10 +37,26 @@ class ProductRepositoryImpl : ProductRepository{
         return list
     }
 
-
-    override fun getProductByUser(): ArrayList<ProductDto> {
-        TODO("Not yet implemented")
+    override fun getOnSaleProducts(): ArrayList<ProductDto> {
+        val list = ArrayList<ProductDto>()
+            productCollection.find(ProductDto::onSale eq true).map {
+            documentToProductDto(it)
+        }.forEach{
+            list.add(it)
+        }
+      return list
     }
+
+    override fun getProductsByCategory(category: String): ArrayList<ProductDto>{
+        val list = ArrayList<ProductDto>()
+        productCollection.find(ProductDto::category eq category).map{
+            documentToProductDto(it)
+        }.forEach {
+            list.add(it)
+        }
+        return list
+    }
+
 
     private fun documentToProductDto(document: Document): ProductDto {
         return ProductDto(
@@ -55,6 +72,7 @@ class ProductRepositoryImpl : ProductRepository{
          image_three=document.getString("image_three"),
          sale_state=document.getInteger("sale_state"), //kac adet
          salePrice=document.getDouble("salePrice"),
+            onSale = document.getBoolean("onSale"),
          rating= document.getDouble("raiting")
         )
     }
@@ -72,6 +90,7 @@ class ProductRepositoryImpl : ProductRepository{
             .append("image_three", product.image_three)
             .append("sale_state", product.sale_state)
             .append("salePrice", product.salePrice)
+            .append("onSale",product.onSale)
             .append("raiting", product.rating)
     }
 

@@ -1,5 +1,7 @@
 package com.example.util
 
+import com.example.model.cart.Cart
+import com.example.model.cart.CartDto
 import com.example.model.product.Product
 import com.example.model.user.User
 import com.example.model.product.ProductDto
@@ -42,6 +44,7 @@ fun Product.toProductDto(): ProductDto =
     image_three = this.image_three,
     sale_state = this.sale_state,
     salePrice = this.salePrice,
+        onSale = this.onSale,
     rating = this.rating
 )
 
@@ -56,6 +59,10 @@ fun ProductDto.toProduct(): Product = Product(title= this.title,
     image_three = this.image_three,
     sale_state = this.sale_state,
     salePrice = this.salePrice,
+    onSale = this.onSale,
     rating = this.rating
 )
+
+fun CartDto.toCart(): Cart = Cart(userId = this.userId, products = this.products)
+
 
