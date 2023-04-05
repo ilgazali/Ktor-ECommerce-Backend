@@ -8,5 +8,6 @@ import kotlinx.serialization.Serializable
 data class CartDto(
     var _id: String? = null,
     val userId: String,
+    @Serializable
     val products: ArrayList<ProductDto>
 )

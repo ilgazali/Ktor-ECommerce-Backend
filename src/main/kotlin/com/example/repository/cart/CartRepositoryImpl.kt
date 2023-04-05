@@ -4,10 +4,7 @@ import com.example.database.MongoDatabase
 import com.example.model.cart.CartDto
 import com.example.model.product.Product
 import com.example.model.product.ProductDto
-import com.example.model.requests.CartRequest
-import com.example.model.user.User
-import com.example.model.user.UserDto
-import com.example.util.toProduct
+import com.example.util.*
 import org.bson.Document
 import org.litote.kmongo.eq
 
@@ -16,56 +13,52 @@ class CartRepositoryImpl :CartRepository {
 
     override fun addToCart(userId: String, products:ArrayList<Product>) : Boolean {
         // Convert CartProduct list to Document list
-        val productList = products.map {
-            productToDocument(it)
+      val newList = ArrayList<ProductDto>()
+         products.forEach {
+             newList.add(it.toProductDto())
         }
-        // Create Cart document
-        val cartDocument = Document()
-        cartDocument["userId"] = userId
-        cartDocument["products"] = productList
+        val cart = CartDto(userId = userId, products = newList)
+        val doc =cartToDocument(cart)
 
         // Insert Cart document into the database
-        val result = cartCollection.insertOne(cartDocument)
+        val result = cartCollection.insertOne(doc)
 
         // Return true if the insertion was successful, false otherwise
         return result.wasAcknowledged()
     }
 
     override fun getCartProductByUser(userId: String): ArrayList<ProductDto> {
-        val list = ArrayList<ProductDto>()
-        cartCollection.find(CartDto::_id eq userId).map {
-                 it.get("products")!!
+        var list = ArrayList<ProductDto>()
+        cartCollection.find(CartDto::userId eq userId).map {
+                 documentToCart(it)
         }.forEach {
-           val product =  it as ProductDto
-            list.add(product)
+            it.products.forEach {
+                list.add(it)
+            }
         }
         return list
     }
 
-  /*  fun cartFromDocument(document: Document): Cart {
-        val id = document["_id"] as ObjectId
-        val userId = document["userId"] as Int
-        val date = LocalDate.parse(document["date"] as String)
-        val products = (document["products"] as List<Document>).map { productFromDocument(it) }
+    fun cartToDocument(cartDto: CartDto): Document {
 
-        return Cart(id, userId, date, products)
-    }*/
-    private fun productToDocument(product: Product): Document {
-        return Document() // BURADA ID ILE ILGILI HATA ALABILIRIM AFTER CHECKKKK
-            .append("title", product.title)
-            .append("price", product.price)
-            .append("description", product.description)
-            .append("count", product.count)
-            .append("stockCount",product.stockCount)
-            .append("category", product.category)
-            .append("image", product.image)
-            .append("image_two", product.image_two)
-            .append("image_three", product.image_three)
-            .append("sale_state", product.sale_state)
-            .append("salePrice", product.salePrice)
-            .append("onSale",product.onSale)
-            .append("rating", product.rating)
+        return Document().append("userId",cartDto.userId).append("products",cartDto.products.map { it.toProduct().productToDocument() })
     }
+
+    fun documentToCart(document: Document): CartDto {
+        val productList = ArrayList<ProductDto>()
+        val userId = document.getString("userId")
+        val products = document.getList("products", Document::class.java)?.map { it.documentToProductDto() }
+        products?.forEach {
+
+            productList.add(it)
+
+
+        }
+
+        return CartDto(userId = userId, products =  productList)
+    }
+
+
 
 
 }

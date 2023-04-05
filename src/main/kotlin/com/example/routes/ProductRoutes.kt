@@ -1,10 +1,7 @@
 package com.example.routes
 
-import com.example.model.cart.Cart
 import com.example.model.product.ProductDto
-import com.example.model.requests.CartRequest
 import com.example.model.requests.CategoryRequest
-import com.example.repository.cart.CartRepositoryImpl
 import com.example.repository.category.CategoryRepositoryImpl
 import com.example.repository.product.ProductRepositoryImpl
 import com.example.util.toProduct
