@@ -2,13 +2,18 @@ package com.example.routes
 
 import com.example.model.cart.CartDto
 import com.example.model.product.Product
+import com.example.model.requests.CartRequest
 import com.example.model.requests.UserRequest
 import com.example.repository.cart.CartRepositoryImpl
+import com.example.util.ErrorResponse
 import com.example.util.toCart
 import com.example.util.toProduct
 import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.delete
+
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -62,8 +67,43 @@ fun Route.cartRouting(){
 
 
             }
+            delete("/delete/{cartId}",{
+                tags = listOf("cart")
+                request {
+                    pathParameter<String>("cartId") {
+                        description = "cardId like 642cb564c7282327e89d7afd"
+                    }
+                    body<CartRequest>()
+                }
+
+            }) {
+                val id = call.receive<CartRequest>()
+                val cartId = call.parameters["cartId"]!!
+                val (success, message) = cartRepository.deleteItemFromBag(id.cartId)
 
 
+                if (success) {
+                    call.respond(HttpStatusCode.OK,message)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, message)
+                }
+
+            }
+
+            authenticate {
+                delete ("/delete/all",{
+                    tags = listOf("cart")
+                    description = "it clears cart."
+                }){
+                    val (success, message) = cartRepository.deleteAllCart()
+
+                    if (success) {
+                        call.respond(HttpStatusCode.OK,message)
+                    } else {
+                        call.respond(HttpStatusCode.NotFound, message)
+                    }
+                }
+            }
 
         }
 }

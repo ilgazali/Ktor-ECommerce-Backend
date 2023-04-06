@@ -7,6 +7,8 @@ import com.example.util.documentToProductDto
 import com.example.util.productToDocument
 import org.bson.Document
 import org.litote.kmongo.eq
+import org.litote.kmongo.or
+import org.litote.kmongo.regex
 
 class ProductRepositoryImpl : ProductRepository{
 
@@ -59,7 +61,19 @@ class ProductRepositoryImpl : ProductRepository{
         return list
     }
 
+    override fun searchProducts(query: String): List<ProductDto> {
+        val regexQuery = Regex.escape(query).toRegex(RegexOption.IGNORE_CASE)
+        val searchFilter = or(
+            ProductDto::title regex regexQuery,
+            ProductDto::description regex regexQuery,
+            ProductDto::category regex regexQuery
+        )
+       val result = productCollection.find(searchFilter).map {
+            it.documentToProductDto()
+        }
 
+        return result.toList()
+    }
 
 
 }

@@ -10,6 +10,6 @@ interface ProductRepository {
     fun getOnSaleProducts():ArrayList<ProductDto>
     fun getProductsByCategory(category: String): ArrayList<ProductDto>
 
-
+    fun searchProducts(query: String): List<ProductDto>
 
 }

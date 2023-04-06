@@ -2,6 +2,7 @@ package com.example.routes
 
 import com.example.model.product.ProductDto
 import com.example.model.requests.CategoryRequest
+import com.example.model.requests.SearchRequest
 import com.example.repository.category.CategoryRepositoryImpl
 import com.example.repository.product.ProductRepositoryImpl
 import com.example.util.toProduct
@@ -189,7 +190,7 @@ fun Route.productRouting(){
        }
 
        authenticate {
-           post("{category}",{
+           post("category/{category}",{
                tags = listOf("category")
                description = "add Category For Products"
            }) {
@@ -228,6 +229,25 @@ fun Route.productRouting(){
            productRepository.deleteAll()
             call.respond(HttpStatusCode.Created,"All data was deleted")
         }
+
+       authenticate {
+           post("/{search}",{
+               tags = listOf("product")
+               description = "search any product, it returns the most related data(product, category...) over the search parameter provided"
+               request {
+                   body<SearchRequest>()
+               }
+           }) {
+               val search = call.receive<SearchRequest>()
+               val products = productRepository.searchProducts(search.search)
+               val data = mapOf("message" to "No product found by the search")
+               if(products.isEmpty()){
+                   call.respond(HttpStatusCode.NotFound,data)
+               }else{
+                   call.respond(HttpStatusCode.OK,products)
+               }
+           }
+       }
 
 
     }
