@@ -2,10 +2,15 @@ package com.example.routes
 
 import com.example.model.product.ProductDto
 import com.example.model.requests.CategoryRequest
+import com.example.model.requests.KeyRequest
 import com.example.model.requests.SearchRequest
 import com.example.repository.category.CategoryRepositoryImpl
 import com.example.repository.product.ProductRepositoryImpl
 import com.example.util.toProduct
+import com.stripe.Stripe
+import com.stripe.exception.StripeException
+import com.stripe.model.Charge
+import com.stripe.param.ChargeCreateParams
 import io.ktor.server.routing.*
 import io.github.smiley4.ktorswaggerui.dsl.post
 import io.github.smiley4.ktorswaggerui.dsl.get
@@ -17,6 +22,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import org.bson.types.ObjectId
 
 private val productRepository = ProductRepositoryImpl()
 private val categoryRepository = CategoryRepositoryImpl()
@@ -151,6 +157,25 @@ fun Route.productRouting(){
 
            }
        }
+       authenticate {
+           get("getProductById", {
+               tags = listOf("product")
+               description = "get One Product"
+
+           }) {
+              val id = call.receive<String>()
+               val (success,product) = productRepository.getProductById(id)
+
+               if (success){
+                   call.respond(product!!)
+               }else{
+                   call.respond(HttpStatusCode.NotFound,"User Not Found!")
+               }
+
+
+
+           }
+       }
 
        authenticate {
            get("getAllProductsOnSale", {
@@ -248,6 +273,8 @@ fun Route.productRouting(){
                }
            }
        }
+
+
 
 
     }

@@ -29,5 +29,6 @@ fun Application.configureRouting(
         getSecretInfo()
         cartRouting()
         productRouting()
+        paymentRouting()
     }
 }

@@ -1,10 +1,13 @@
 package com.example.model.product
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import org.bson.types.ObjectId
 
 @Serializable
 class ProductDto(
-    var _id: String? = null,
+
+    var _id: ObjectId? = null,
     val title: String,
     val price: Double,
     val description: String,

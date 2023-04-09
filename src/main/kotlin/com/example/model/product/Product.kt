@@ -1,11 +1,13 @@
 package com.example.model.product
 
 import kotlinx.serialization.Contextual
+import org.bson.codecs.pojo.annotations.BsonId
 import org.litote.kmongo.Id
 
  class Product(
-     @Contextual
-             var _id: Id<Product>? = null,
+   //  @Contextual
+     @BsonId
+     var _id: Id<Product>? = null,
      val title: String,
      val price: Double,
      val description: String,

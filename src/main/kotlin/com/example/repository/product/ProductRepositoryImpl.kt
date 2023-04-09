@@ -6,9 +6,9 @@ import com.example.model.product.ProductDto
 import com.example.util.documentToProductDto
 import com.example.util.productToDocument
 import org.bson.Document
-import org.litote.kmongo.eq
-import org.litote.kmongo.or
-import org.litote.kmongo.regex
+import org.bson.types.ObjectId
+import org.litote.kmongo.*
+import org.litote.kmongo.id.toId
 
 class ProductRepositoryImpl : ProductRepository{
 
@@ -29,6 +29,21 @@ class ProductRepositoryImpl : ProductRepository{
             return false
         }
         return true
+    }
+
+    override fun getProductById(id: String): Pair<Boolean,ProductDto?> {
+
+
+        val doc =  productCollection.findOne(ProductDto::_id eq ObjectId(id))
+
+        println()
+        println( "ProductDto._id: ${doc?.get("_id").toString()} ============================== ${id}")
+
+        if (doc != null) {
+
+            return Pair(true, doc.documentToProductDto())
+        }
+        return Pair(false,null)
     }
 
     override fun getProducts(): ArrayList<ProductDto> {
@@ -70,6 +85,7 @@ class ProductRepositoryImpl : ProductRepository{
         )
        val result = productCollection.find(searchFilter).map {
             it.documentToProductDto()
+
         }
 
         return result.toList()

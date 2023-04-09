@@ -33,6 +33,7 @@ repositories {
 }
 
 dependencies {
+    implementation ("com.stripe:stripe-java:19.1.0")
     implementation("org.litote.kmongo:kmongo:$kmongo_version")
     implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
     implementation("ch.qos.logback:logback-classic:1.4.6")

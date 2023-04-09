@@ -7,6 +7,9 @@ import com.example.model.user.User
 import com.example.model.product.ProductDto
 import com.example.model.user.UserDto
 import org.bson.Document
+import org.bson.types.ObjectId
+import org.litote.kmongo.toId
+import org.litote.kmongo.util.idValue
 
 fun User.toDto(): UserDto =
     UserDto(
@@ -32,7 +35,7 @@ fun UserDto.toUser(): User =
 
 fun Product.toProductDto(): ProductDto =
     ProductDto(
-    _id = this._id.toString(),
+   // _id = ObjectId(this._id.toString()),
         title= this.title,
     price = this.price,
     description = this.description,
@@ -68,7 +71,7 @@ fun CartDto.toCart(): Cart = Cart(userId = this.userId, products = this.products
 
 fun Document.documentToProductDto(): ProductDto {
     return ProductDto(
-        _id = this.get("_id").toString(), // to get id of object from db use this get()
+       // _id = this.get("_id").toString(), // to get id of object from db use this get()
         title= this.getString("title"),
         price= this.getDouble("price"),
         description= this.getString("description"),
@@ -84,6 +87,7 @@ fun Document.documentToProductDto(): ProductDto {
         rating= this.getDouble("rating")
     )
 }
+
 fun Product.productToDocument(): Document {
     return Document() // BURADA ID ILE ILGILI HATA ALABILIRIM AFTER CHECKKKK
         .append("title", this.title)
