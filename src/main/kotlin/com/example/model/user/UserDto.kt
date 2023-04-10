@@ -1,8 +1,7 @@
 package com.example.model.user
 
 import kotlinx.serialization.Serializable
-import org.bson.types.ObjectId
-import org.litote.kmongo.Id
+
 @Serializable
 data class UserDto(
     var _id: String? = null,

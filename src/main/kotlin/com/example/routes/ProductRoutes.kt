@@ -6,6 +6,7 @@ import com.example.model.requests.KeyRequest
 import com.example.model.requests.SearchRequest
 import com.example.repository.category.CategoryRepositoryImpl
 import com.example.repository.product.ProductRepositoryImpl
+import com.example.util.Constants
 import com.example.util.toProduct
 import com.stripe.Stripe
 import com.stripe.exception.StripeException
@@ -194,7 +195,7 @@ fun Route.productRouting(){
            }
        }
        authenticate {
-           post("getProductsByCategory/{category}",{
+           get("getProductsByCategory/{category}",{
                tags = listOf("product")
                description = "get Products By Category"
                request {
@@ -256,7 +257,7 @@ fun Route.productRouting(){
         }
 
        authenticate {
-           post("/{search}",{
+           get("/{search}",{
                tags = listOf("product")
                description = "search any product, it returns the most related data(product, category...) over the search parameter provided"
                request {
@@ -265,7 +266,7 @@ fun Route.productRouting(){
            }) {
                val search = call.receive<SearchRequest>()
                val products = productRepository.searchProducts(search.search)
-               val data = mapOf("message" to "No product found by the search")
+               val data = mapOf(Constants.MESSAGE to "No product found by the search")
                if(products.isEmpty()){
                    call.respond(HttpStatusCode.NotFound,data)
                }else{

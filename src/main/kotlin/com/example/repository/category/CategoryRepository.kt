@@ -4,5 +4,5 @@ import com.example.model.requests.CategoryRequest
 
 interface CategoryRepository {
     fun addCategory(category: String): Boolean
-    fun getCategories(): ArrayList<String>
+    fun getCategories(): List<String>
 }

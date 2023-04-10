@@ -15,7 +15,7 @@ class CategoryRepositoryImpl : CategoryRepository {
         return result.wasAcknowledged()
     }
 
-    override fun getCategories(): ArrayList<String> {
+    override fun getCategories(): List<String> {
         val categoryList = ArrayList<String>()
         categoryCollection.find().map {
             it.get("category").toString()

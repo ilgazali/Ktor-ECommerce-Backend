@@ -11,6 +11,7 @@ import com.example.security.token.JwtTokenService
 import com.example.security.token.TokenConfig
 
 
+
 /*fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
@@ -36,6 +37,5 @@ fun Application.module() {
     configureSecurity(tokenConfig)
     configureRouting(userRepository, hashingService, tokenService, tokenConfig)
     configureCORS()
-
 
 }

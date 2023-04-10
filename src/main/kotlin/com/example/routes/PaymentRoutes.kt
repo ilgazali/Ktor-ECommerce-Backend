@@ -4,6 +4,7 @@ import com.example.model.order.Order
 import com.example.model.requests.KeyRequest
 import com.example.repository.cart.CartRepositoryImpl
 import com.example.repository.order.OrderRepositoryImpl
+import com.example.util.Constants
 import com.stripe.Stripe
 import com.stripe.exception.StripeException
 import com.stripe.model.Charge
@@ -34,7 +35,7 @@ fun Route.paymentRouting(){
             val paymentToken = call.receive<KeyRequest>()
 
             // set up Stripe API key
-            Stripe.apiKey = "sk_test_51KpvHVGxCwE8wgTc2rfMYDJoiHgraDLgTDXb3t3V3I28sEJRVzj3mKcZOYEEERegujvEAcjBeVIctUCPOFFziy2900wEIq9Kdo"
+            Stripe.apiKey = System.getenv("API_KEY")
 
             // create a charge using the payment token
             val chargeParams = ChargeCreateParams.builder()
@@ -59,21 +60,20 @@ fun Route.paymentRouting(){
                     val isOrderDoneSuccessfully = orderRepository.order(order)
 
                     if (isOrderDoneSuccessfully){
-                        call.respond( call.respond("message" to "payment ${charge.status}"))
+                        call.respond(mapOf(Constants.STATUS to true,Constants.MESSAGE to "payment ${charge.status}"))
                     }
-
                 } else if (status == "pending") {
                     // payment is still pending
-                    call.respond("message" to "payment is still pending")
+                    call.respond(mapOf(Constants.STATUS to false,Constants.MESSAGE to "payment is still pending"))
                 } else if (status == "failed") {
                     // payment failed
-                    call.respond("message" to "payment failed")
+                    call.respond(mapOf(Constants.STATUS to false,Constants.MESSAGE to "payment failed"))
                 }
 
 
             } catch (e: StripeException) {
                 // return an error message to the client
-                call.respondText("Error: ${e.message}")
+                call.respond(mapOf(Constants.STATUS to false, Constants.MESSAGE to e.message))
             }
         }
 

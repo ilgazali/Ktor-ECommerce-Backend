@@ -31,7 +31,7 @@ class CartRepositoryImpl :CartRepository {
         return result.wasAcknowledged()
     }
 
-    override fun getCartProductByUser(userId: String): ArrayList<ProductDto> {
+    override fun getCartProductByUser(userId: String): List<ProductDto> {
         var list = ArrayList<ProductDto>()
         cartCollection.find(CartDto::userId eq userId).map {
                  documentToCart(it)

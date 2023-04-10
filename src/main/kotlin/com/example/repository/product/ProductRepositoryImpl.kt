@@ -46,7 +46,7 @@ class ProductRepositoryImpl : ProductRepository{
         return Pair(false,null)
     }
 
-    override fun getProducts(): ArrayList<ProductDto> {
+    override fun getProducts(): List<ProductDto> {
         val list = ArrayList<ProductDto>()
         productCollection.find().map{
             it.documentToProductDto()
@@ -56,7 +56,7 @@ class ProductRepositoryImpl : ProductRepository{
         return list
     }
 
-    override fun getOnSaleProducts(): ArrayList<ProductDto> {
+    override fun getOnSaleProducts(): List<ProductDto> {
         val list = ArrayList<ProductDto>()
             productCollection.find(ProductDto::onSale eq true).map {
             it.documentToProductDto()
@@ -66,7 +66,7 @@ class ProductRepositoryImpl : ProductRepository{
       return list
     }
 
-    override fun getProductsByCategory(category: String): ArrayList<ProductDto>{
+    override fun getProductsByCategory(category: String): List<ProductDto>{
         val list = ArrayList<ProductDto>()
         productCollection.find(ProductDto::category eq category).map{
             it.documentToProductDto()

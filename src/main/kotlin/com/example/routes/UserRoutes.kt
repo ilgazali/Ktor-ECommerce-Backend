@@ -5,10 +5,12 @@ import com.example.model.responses.AuthResponse
 import com.example.model.user.UserDto
 import com.example.repository.user.UserRepository
 import com.example.security.hashing.HashingService
+import com.example.security.hashing.SHA256HashingService
 import com.example.security.hashing.SaltedHash
 import com.example.security.token.TokenClaim
 import com.example.security.token.TokenConfig
 import com.example.security.token.TokenService
+import com.example.util.Constants
 import com.example.util.toUser
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -27,6 +29,8 @@ fun Route.register(
     hashingService: HashingService,
     userRepository: UserRepository
 ) {
+
+
     post("signup",{
         tags = listOf("users")
         description = "Sign Up User - DO NOT ENTER ANY VALUE FOR 'ID' AND 'SALT' PARAMETERS. THEY ARE GENERATED AUTOMATICALLY!"
@@ -60,7 +64,7 @@ fun Route.register(
 
         if(areFieldsBlank || isPwTooShort) {
             println("alanlar bos")
-            val response = mapOf("success" to false,"message" to "invalid fields are provided")
+            val response = mapOf(Constants.STATUS to false,Constants.MESSAGE to "invalid fields are provided")
             call.respond(response)
 
             return@post
@@ -79,12 +83,12 @@ fun Route.register(
         if(!wasAcknowledged)  {
             println("veri tabanina kaydedilmedi")
 
-            val response = mapOf("success" to false,"message" to "MongoDB sign up operation has failed")
+            val response = mapOf(Constants.STATUS to false,Constants.MESSAGE to "MongoDB sign up operation has failed")
             call.respond(response)
             return@post
         }
 
-        val reponse = mapOf("success" to true,"message" to "Signing up is succesfully!")
+        val reponse = mapOf(Constants.STATUS to true,Constants.MESSAGE to "Signing up is succesfully!")
         call.respond(reponse)
     }
 }
@@ -117,8 +121,7 @@ fun Route.signIn(
 
         if(user == null) {
 
-            val data = mapOf("data" to null)
-            val response = mapOf("success" to false,"message" to "Incorrect username or password", "data" to data)
+            val response = mapOf(Constants.STATUS to false,Constants.MESSAGE to "Incorrect username or password")
             call.respond(HttpStatusCode.Conflict,response)
             return@post
         }
@@ -132,8 +135,8 @@ fun Route.signIn(
         )
         if(!isValidPassword) {
             println("Entered hash: ${DigestUtils.sha256Hex("${user.salt}${request.password}")}, Hashed PW: ${user.password}")
-            val data = mapOf("data" to null)
-            val response = mapOf("success" to false,"message" to "Incorrect username or password", "data" to data)
+
+            val response = mapOf(Constants.STATUS to false,Constants.MESSAGE to "Incorrect username or password")
             call.respond(response)
 
             return@post
@@ -147,7 +150,7 @@ fun Route.signIn(
             )
         )
 
-        val response = mapOf("success" to true,"message" to "Successfully logged in!", "data" to AuthResponse(token = token))
+        val response = mapOf(Constants.STATUS to true,Constants.MESSAGE to AuthResponse(token = token))
 
         call.respond(HttpStatusCode.OK,response)
     }

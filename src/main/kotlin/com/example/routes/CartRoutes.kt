@@ -5,10 +5,11 @@ import com.example.model.product.Product
 import com.example.model.requests.CartRequest
 import com.example.model.requests.UserRequest
 import com.example.repository.cart.CartRepositoryImpl
-import com.example.util.ErrorResponse
+import com.example.util.Constants
 import com.example.util.toCart
 import com.example.util.toProduct
 import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.delete
 
 import io.ktor.http.*
@@ -41,14 +42,17 @@ fun Route.cartRouting(){
                 // Call the addToCart function to add the cart to the database
                 val isAdded = cartRepository.addToCart(userId, products as ArrayList<Product>)
 
+
+
+
                 if (isAdded) {
-                    call.respond(HttpStatusCode.Created, "Cart added successfully")
+                    call.respond(HttpStatusCode.Created, mapOf(Constants.STATUS to true,Constants.MESSAGE to "Cart added successfully"))
                 } else {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to add cart")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf(Constants.STATUS to false,Constants.MESSAGE to "Failed to add cart"))
                 }
             }
 
-            post("getCartProductByUser/{userId}",{
+            get("getCartProductByUser/{userId}",{
                 tags = listOf("cart")
                 request {
                     body<UserRequest>()
@@ -78,14 +82,15 @@ fun Route.cartRouting(){
 
             }) {
                 val id = call.receive<CartRequest>()
-                val cartId = call.parameters["cartId"]!!
                 val (success, message) = cartRepository.deleteItemFromBag(id.cartId)
+
+                val data = mapOf(Constants.STATUS to success,Constants.MESSAGE to message)
 
 
                 if (success) {
-                    call.respond(HttpStatusCode.OK,message)
+                    call.respond(HttpStatusCode.OK,data)
                 } else {
-                    call.respond(HttpStatusCode.NotFound, message)
+                    call.respond(HttpStatusCode.NotFound, data)
                 }
 
             }
@@ -97,10 +102,13 @@ fun Route.cartRouting(){
                 }){
                     val (success, message) = cartRepository.deleteAllCart()
 
+                    val data = mapOf(Constants.STATUS to success,Constants.MESSAGE to message)
+
+
                     if (success) {
-                        call.respond(HttpStatusCode.OK,message)
+                        call.respond(HttpStatusCode.OK,data)
                     } else {
-                        call.respond(HttpStatusCode.NotFound, message)
+                        call.respond(HttpStatusCode.NotFound, data)
                     }
                 }
             }
