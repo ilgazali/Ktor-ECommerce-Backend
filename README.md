@@ -84,3 +84,5 @@ This project uses JWT (JSON Web Tokens) for user authentication. JWT is a standa
 ### Swagger
 This project uses Swagger for API documentation. Swagger is an open-source tool that helps developers design, build, document, and consume RESTful web services. It provides a user-friendly interface for developers to document their APIs and enables consumers to easily discover and understand how to use them.
 
+### Stripe Payment
+This project uses Stripe for payment processing. Stripe is a popular payment gateway that allows businesses to accept online payments. It provides a simple and secure way to handle payments and is widely used by businesses of all sizes.
